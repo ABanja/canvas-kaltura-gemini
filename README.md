@@ -42,7 +42,7 @@ Canvas page (*.instructure.com or your school's Canvas domain)
 
 1. Create a key at **[Google AI Studio → API keys](https://aistudio.google.com/apikey)**.
 2. Open the extension's **Settings** (the ⚙ icon in the side panel, or right-click the toolbar icon → *Options*).
-3. Paste the key and click **Test key & load models**. Then pick a model. The default is `gemini-2.5-flash`. Any model that supports `generateContent` works, and newer models appear in the list automatically.
+3. Paste the key and click **Test key & load models**. Then pick a model. The default is `gemini-3.8-flash`. Any model that supports `generateContent` works, and newer models appear in the list automatically. If Google retires the model you picked, the assistant switches to a current one and tells you.
 4. Click **Save**.
 
 The key is stored in `chrome.storage.local` on this device only. It is not synced, and it is sent only to `generativelanguage.googleapis.com`.

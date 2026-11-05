@@ -1,6 +1,6 @@
 export const DEFAULT_SETTINGS = Object.freeze({
   apiKey: '',
-  model: 'gemini-2.5-flash',
+  model: 'gemini-3.8-flash',
   temperature: 0.4,
   preferredLanguage: 'en',
   maxUploadMb: 300,

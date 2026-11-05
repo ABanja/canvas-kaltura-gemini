@@ -65,6 +65,49 @@ export async function listModels(apiKey) {
   return models;
 }
 
+/** True when an error means the model itself can't be used (retired, renamed, not enabled). */
+export function isModelUnavailableError(err) {
+  return (
+    err instanceof GeminiError &&
+    (err.status === 404 || /no longer available|not found|is not supported|deprecated/i.test(err.message))
+  );
+}
+
+function versionOf(id) {
+  const m = id.match(/^gemini-(\d+(?:\.\d+)*)/);
+  return m ? m[1].split('.').map(Number) : [];
+}
+
+function compareVersions(a, b) {
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    const diff = (a[i] || 0) - (b[i] || 0);
+    if (diff) return diff;
+  }
+  return 0;
+}
+
+/**
+ * Chooses a model to replace one that is unavailable: the model the error message
+ * recommends if the key can use it, otherwise the newest stable "gemini-X-flash".
+ */
+export async function pickReplacementModel(apiKey, unavailableModel, errorMessage = '') {
+  const ids = (await listModels(apiKey)).map((m) => m.id).filter((id) => id !== unavailableModel);
+  if (!ids.length) throw new GeminiError('Your API key has no models that support generateContent.');
+
+  const suggested = [...String(errorMessage).matchAll(/models\/([\w.-]+)/g)].map((m) => m[1]);
+  const recommended = suggested.find((id) => id !== unavailableModel && ids.includes(id));
+  if (recommended) return recommended;
+
+  const newest = (pattern) =>
+    ids.filter((id) => pattern.test(id)).sort((a, b) => compareVersions(versionOf(b), versionOf(a)))[0];
+  return (
+    newest(/^gemini-[\d.]+-flash$/) ||
+    newest(/^gemini-[\d.]+-flash(?!.*(lite|image|tts|audio|live))/) ||
+    newest(/^gemini-/) ||
+    ids[0]
+  );
+}
+
 /**
  * Streams a response as text chunks.
  * `contents` uses the REST shape: [{ role: 'user' | 'model', parts: [...] }].

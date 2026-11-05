@@ -1,5 +1,5 @@
-import { getSettings } from '../lib/settings.js';
-import { streamGenerate, uploadFile } from '../lib/gemini.js';
+import { getSettings, saveSettings } from '../lib/settings.js';
+import { streamGenerate, uploadFile, isModelUnavailableError, pickReplacementModel } from '../lib/gemini.js';
 import * as kaltura from '../lib/kaltura.js';
 import { parseCaptions, cuesToTranscript, transcriptToText, formatTimestamp } from '../lib/captions.js';
 import { renderMarkdown } from '../lib/markdown.js';
@@ -504,10 +504,10 @@ async function ask(text, display = text) {
   const controller = new AbortController();
   state.abort = controller;
   setGenerating(true);
-  try {
+  const run = async (model) => {
     const stream = streamGenerate({
       apiKey: state.settings.apiKey,
-      model: state.settings.model,
+      model,
       temperature: Number(state.settings.temperature),
       systemInstruction: buildSystemInstruction(player, sess),
       contents: sess.history,
@@ -516,6 +516,21 @@ async function ask(text, display = text) {
     for await (const chunk of stream) {
       reply.text += chunk;
       updateMessage(reply);
+    }
+  };
+  try {
+    try {
+      await run(state.settings.model);
+    } catch (err) {
+      // Google retires models over time; switch to a current one and retry once.
+      if (reply.text || !isModelUnavailableError(err)) throw err;
+      const oldModel = state.settings.model;
+      const newModel = await pickReplacementModel(state.settings.apiKey, oldModel, err.message);
+      state.settings.model = newModel;
+      await saveSettings({ model: newModel });
+      reply.text = `_Model “${oldModel}” is unavailable, so I switched to “${newModel}” (change it in Settings)._\n\n`;
+      updateMessage(reply);
+      await run(newModel);
     }
     if (!reply.text.trim()) reply.text = '_(Gemini returned an empty response.)_';
     sess.history.push({ role: 'model', parts: [{ text: reply.text }] });
