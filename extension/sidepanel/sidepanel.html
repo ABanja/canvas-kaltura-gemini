@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kaltura Gemini Assistant</title>
+    <link rel="stylesheet" href="../shared/base.css" />
+    <link rel="stylesheet" href="sidepanel.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <img src="../icons/icon32.png" alt="" width="20" height="20" />
+        <span>Kaltura Gemini Assistant</span>
+      </div>
+      <button id="openOptions" class="icon-btn" type="button" title="Settings" aria-label="Settings">⚙</button>
+    </header>
+
+    <section id="keyWarning" class="notice" hidden>
+      Add your Gemini API key in <a href="#" id="keyLink">Settings</a> to get started.
+    </section>
+
+    <section class="card" id="videoCard">
+      <div class="row between">
+        <label for="videoSelect" class="label">Video on this page</label>
+        <button id="rescan" class="link-btn" type="button">Rescan</button>
+      </div>
+      <select id="videoSelect" hidden></select>
+      <p id="noVideos" class="muted">
+        No Kaltura player detected on this tab yet. Open a Canvas page with a Kaltura video. If it
+        still doesn't appear, press play once and click Rescan.
+      </p>
+
+      <div id="sourceControls" hidden>
+        <div class="row">
+          <select id="captionSelect" aria-label="Caption track"></select>
+          <button id="loadTranscript" type="button" class="secondary">Load</button>
+        </div>
+        <button id="uploadVideo" type="button" class="secondary full">Send the video itself to Gemini</button>
+        <p id="sourceStatus" class="status" role="status"></p>
+        <details id="transcriptDetails" hidden>
+          <summary>View transcript</summary>
+          <div id="transcript" class="transcript"></div>
+        </details>
+      </div>
+    </section>
+
+    <section class="actions" id="actions" aria-label="Quick actions">
+      <button type="button" data-action="summary">Summarize</button>
+      <button type="button" data-action="chapters">Chapters</button>
+      <button type="button" data-action="study">Study guide</button>
+      <button type="button" data-action="quiz">Quiz me</button>
+      <button type="button" data-action="now">Explain this moment</button>
+    </section>
+
+    <main id="chat" class="chat" aria-live="polite"></main>
+
+    <form id="composer" class="composer">
+      <textarea id="prompt" rows="2" placeholder="Ask anything about this video…"></textarea>
+      <div class="composer-buttons">
+        <button type="button" id="clearChat" class="link-btn" title="Start a new conversation">Clear</button>
+        <button type="button" id="stop" class="secondary" hidden>Stop</button>
+        <button type="submit" id="send">Send</button>
+      </div>
+    </form>
+
+    <script type="module" src="sidepanel.js"></script>
+  </body>
+</html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kaltura Gemini Assistant Settings</title>
+    <link rel="stylesheet" href="../shared/base.css" />
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main>
+      <h1>
+        <img src="../icons/icon48.png" alt="" width="32" height="32" />
+        Kaltura Gemini Assistant
+      </h1>
+
+      <form id="form">
+        <section>
+          <h2>Gemini API</h2>
+          <label for="apiKey">API key</label>
+          <div class="row">
+            <input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="AIza…" />
+            <button id="toggleKey" type="button" class="secondary">Show</button>
+          </div>
+          <p class="hint">
+            Create a key at
+            <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a>. It is
+            stored only in this browser profile (<code>chrome.storage.local</code>) and is sent only to
+            <code>generativelanguage.googleapis.com</code>.
+          </p>
+
+          <label for="model">Model</label>
+          <div class="row">
+            <input id="model" type="text" list="modelList" spellcheck="false" />
+            <button id="testKey" type="button" class="secondary">Test key &amp; load models</button>
+          </div>
+          <datalist id="modelList"></datalist>
+          <p id="testStatus" class="hint" role="status"></p>
+
+          <label for="temperature">Temperature <span id="temperatureValue" class="muted"></span></label>
+          <input id="temperature" type="range" min="0" max="1" step="0.1" />
+        </section>
+
+        <section>
+          <h2>Video &amp; transcript</h2>
+          <label for="preferredLanguage">Preferred caption language</label>
+          <input id="preferredLanguage" type="text" placeholder="en" />
+          <p class="hint">A language code or name such as <code>en</code> or <code>Spanish</code>.</p>
+
+          <label for="maxUploadMb">Largest video to send to Gemini (MB)</label>
+          <input id="maxUploadMb" type="number" min="10" max="2000" step="10" />
+          <p class="hint">
+            Only used when a video has no captions and you choose to send the video file itself. The file is
+            uploaded to the Gemini File API and deleted by Google after 48 hours.
+          </p>
+
+          <label for="extraInstructions">Extra instructions for Gemini (optional)</label>
+          <textarea id="extraInstructions" rows="3" placeholder="e.g. Explain like I'm a first-year student. Answer in Spanish."></textarea>
+        </section>
+
+        <section>
+          <h2>Extra Kaltura domains</h2>
+          <p class="hint">
+            Players on <code>*.kaltura.com</code> work out of the box. If your school serves Kaltura from its own
+            domain (for example <code>mediaspace.myschool.edu</code> or <code>*.myschool.edu</code>), add it here, one
+            per line. Chrome will ask you to grant access.
+          </p>
+          <textarea id="customDomains" rows="3" spellcheck="false" placeholder="mediaspace.myschool.edu"></textarea>
+        </section>
+
+        <div class="footer">
+          <button type="submit">Save</button>
+          <span id="saveStatus" class="hint" role="status"></span>
+        </div>
+      </form>
+
+      <section class="about">
+        <h2>Privacy</h2>
+        <p>
+          When you use the assistant, the video's transcript (or, if you choose, the video file) and your questions
+          are sent to Google's Gemini API under your own API key and Google's terms. Nothing is sent to the
+          extension's authors. Check your institution's policies before sending course material to third-party AI
+          services.
+        </p>
+        <p class="muted">Not affiliated with or endorsed by Instructure, Kaltura or Google.</p>
+      </section>
+    </main>
+    <script type="module" src="options.js"></script>
+  </body>
+</html>
